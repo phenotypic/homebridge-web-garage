@@ -4,7 +4,7 @@
 
 ## Description
 
-This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-based garage opener to Apple's [HomeKit](http://www.apple.com/ios/home/). Using HTTP requests, you can open/close the garage and update the plugin with the garage's real-time position.
+This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-based garage opener to Apple's [HomeKit](http://www.apple.com/ios/home/). Using HTTP requests, you can open/close the garage and update the plugin with the garage's real-time position. The plugin achieves this by setting up a listen server and allows you to send messages to it which will update the door position within HomeKit.
 
 ## Installation
 
@@ -51,3 +51,35 @@ This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-ba
 | `firmware` _(optional)_ | Appears under the _Firmware_ field for the accessory | version |
 
 ## API Interfacing
+
+Your API should be able to:
+
+1. Open/close the garage when it receives:
+```
+/targetDoorState/INT_VALUE_0_TO_1
+```
+
+2. Update `currentDoorState` as it opens/closes by messaging the listen server:
+```
+/currentDoorState/INT_VALUE_0_TO_3
+```
+
+3. Update `targetDoorState` following a manual override by messaging the listen server:
+```
+/targetDoorState/INT_VALUE_0_TO_1
+```
+
+4. Update `obstructionDetected` when there is a change in the presence of an obstruction:
+```
+/obstructionDetected/INT_VALUE_0_TO_1
+```
+
+## DoorState Key
+
+| Number | Name |
+| --- | --- |
+| `0` | Open |
+| `1` | Closed |
+| `2` | Opening |
+| `3` | Closing |
+
