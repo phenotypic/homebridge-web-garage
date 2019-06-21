@@ -56,7 +56,7 @@ function GarageDoorOpener (log, config) {
   })
 
   this.server.listen(this.port, function () {
-    log('Listen server: http://%s:%s', ip.address(), self.port)
+    self.log('Listen server: http://%s:%s', ip.address(), self.port)
   })
 
   this.service = new Service.GarageDoorOpener(this.name)
