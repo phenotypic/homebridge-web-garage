@@ -42,10 +42,13 @@ function GarageDoorOpener (log, config) {
   var self = this
   this.server = http.createServer(function (request, response) {
     var parts = request.url.split('/')
-    if ((request.url.includes('/targetDoorState/') || request.url.includes('/currentDoorState/') || request.url.includes('/obstructionDetected/')) && (parts[parts.length - 1].length === 1)) {
+    var partOne = parts[parts.length - 2]
+    var partTwo = parts[parts.length - 1]
+    var requestArray = ['targetDoorState', 'currentDoorState', 'obstructionDetected']
+    if (requestArray.indexOf(partOne) >= 0 && partTwo.length === 1) {
       self.log('[*] Handling request: %s', request.url)
       response.end('Handling request')
-      self._httpHandler(parts[parts.length - 2], parts[parts.length - 1])
+      self._httpHandler(partOne, partTwo)
     } else {
       self.log('[!] Invalid request: %s', request.url)
       response.end('Invalid request')
