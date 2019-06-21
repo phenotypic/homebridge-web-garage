@@ -19,7 +19,7 @@ This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-ba
      {
        "accessory": "GarageDoorOpener",
        "name": "Garage",
-       "openURL": "http://myurl.com"
+       "apiroute": "http://myurl.com"
      }
 ]
 ```
