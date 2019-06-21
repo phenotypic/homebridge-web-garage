@@ -69,7 +69,7 @@ Your API should be able to:
 /targetDoorState/INT_VALUE_0_TO_1
 ```
 
-4. Update `obstructionDetected` when there is a change in the presence of an obstruction:
+4. Update `obstructionDetected` when obstruction is detected by messaging the listen server:
 ```
 /obstructionDetected/INT_VALUE_0_TO_1
 ```
