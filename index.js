@@ -30,6 +30,8 @@ function GarageDoorOpener (log, config) {
   this.timeout = config.timeout || 3000
   this.http_method = config.http_method || 'GET'
 
+  this.requestArray = ['targetDoorState', 'currentDoorState', 'obstructionDetected']
+
   if (this.username != null && this.password != null) {
     this.auth = {
       user: this.username,
@@ -43,8 +45,7 @@ function GarageDoorOpener (log, config) {
     var parts = request.url.split('/')
     var partOne = parts[parts.length - 2]
     var partTwo = parts[parts.length - 1]
-    var requestArray = ['targetDoorState', 'currentDoorState', 'obstructionDetected']
-    if (requestArray.indexOf(partOne) >= 0 && partTwo.length === 1) {
+    if (parts.length === 3 && this.requestArray.indexOf(partOne) >= 0 && partTwo.length === 1) {
       this.log('[*] Handling request: %s', request.url)
       response.end('Handling request')
       this._httpHandler(partOne, partTwo)
@@ -69,18 +70,18 @@ GarageDoorOpener.prototype = {
   },
 
   _httpHandler: function (characteristic, value) {
+    this.log('[*] Updating %s to: %s', characteristic, value)
     if (characteristic === 'currentDoorState') {
-      this.log('[*] Updating currentDoorState to: %s', value)
       this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(value)
     } else if (characteristic === 'targetDoorState') {
-      this.log('[*] Updating targetDoorState to: %s', value)
       this.service.getCharacteristic(Characteristic.TargetDoorState).updateValue(value)
       if (parseInt(value) === 0 && this.autoLock) {
         this.autoLockFunction()
       }
     } else if (characteristic === 'obstructionDetected') {
-      this.log('[*] Updating obstructionDetected to: %s', value)
       this.service.getCharacteristic(Characteristic.ObstructionDetected).updateValue(value)
+    } else {
+      this.log('[!] Error: Unknown characteristic "%s" with value "%s"', characteristic, value)
     }
   },
 
