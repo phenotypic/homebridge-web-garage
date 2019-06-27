@@ -36,6 +36,8 @@ This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-ba
 | --- | --- | --- |
 | `autoLock` _(optional)_ | Whether your garage should auto-close after being opened | `false` |
 | `autoLockDelay` _(optional)_ | Time (in seconds) until your garage will automatically close (if enabled) | `10` |
+| `autoReset` _(optional)_ | Whether obstruction detection should automatically change the state back to `0` after being triggered | `false` |
+| `autoResetDelay` _(optional)_ | Time (in seconds) until the obstruction detection will automatically reset (if enabled) | `5` |
 
 ### Additional options
 | Key | Description | Default |
@@ -69,7 +71,7 @@ Your API should be able to:
 /targetDoorState/INT_VALUE_0_TO_1
 ```
 
-4. Update `obstructionDetected` when obstruction is detected by messaging the listen server:
+4. Update `obstructionDetected` when an obstruction is detected by messaging the listen server (should notify `0` after obstruction leaves unless `autoReset` is enabled):
 ```
 /obstructionDetected/INT_VALUE_0_TO_1
 ```
