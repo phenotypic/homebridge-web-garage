@@ -20,6 +20,9 @@ function GarageDoorOpener (log, config) {
   this.autoLock = config.autoLock || false
   this.autoLockDelay = config.autoLockDelay || 10
 
+  this.autoReset = config.autoReset || false
+  this.autoResetDelay = config.autoResetDelay || 5
+
   this.manufacturer = config.manufacturer || packageJson.author.name
   this.serial = config.serial || packageJson.version
   this.model = config.model || packageJson.name
@@ -83,6 +86,9 @@ GarageDoorOpener.prototype = {
       case 'obstructionDetected':
         this.log('Updating %s to: %s', characteristic, value)
         this.service.getCharacteristic(Characteristic.ObstructionDetected).updateValue(value)
+        if (parseInt(value) === 1 && this.autoReset) {
+          this.autoResetFunction()
+        }
         break
       default:
         this.log.warn('Unknown characteristic "%s" with value "%s"', characteristic, value)
@@ -126,6 +132,14 @@ GarageDoorOpener.prototype = {
       this.service.setCharacteristic(Characteristic.TargetDoorState, 1)
       this.log('Autolocking...')
     }, this.autoLockDelay * 1000)
+  },
+
+  autoResetFunction: function () {
+    this.log('Waiting %s seconds to autoreset obstruction detection', this.autoResetDelay)
+    setTimeout(() => {
+      this.service.getCharacteristic(Characteristic.ObstructionDetected).updateValue(0)
+      this.log('Autoreset obstruction detection')
+    }, this.autoResetDelay * 1000)
   },
 
   getServices: function () {
