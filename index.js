@@ -16,7 +16,7 @@ function GarageDoorOpener (log, config) {
   this.name = config.name
   this.apiroute = config.apiroute
   this.port = config.port || 2000
-  this.retryDelay = config.retryDelay || 30
+  this.pollInterval = config.pollInterval || 60
 
   this.autoLock = config.autoLock || false
   this.autoLockDelay = config.autoLockDelay || 10
@@ -165,14 +165,6 @@ GarageDoorOpener.prototype = {
     }, this.autoResetDelay * 1000)
   },
 
-  retryStatus: function () {
-    this.log('Waiting %s seconds to retry device status', this.retryDelay)
-    setTimeout(() => {
-      this.log('Retrying device status...')
-      this._getStatus(function () {})
-    }, this.retryDelay * 1000)
-  },
-
   getServices: function () {
     this.informationService = new Service.AccessoryInformation()
     this.informationService
@@ -186,6 +178,10 @@ GarageDoorOpener.prototype = {
       .on('set', this.setTargetDoorState.bind(this))
 
     this._getStatus(function () {})
+
+    setInterval(function () {
+      this._getStatus(function () {})
+    }.bind(this), this.pollInterval * 1000)
 
     return [this.informationService, this.service]
   }
