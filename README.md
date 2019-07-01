@@ -43,6 +43,7 @@ This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-ba
 | Key | Description | Default |
 | --- | --- | --- |
 | `port` _(optional)_ | Port for your HTTP listener (only one listener per port) | `2000` |
+| `retryDelay`  _(optional)_ | Interval (in seconds) until next status retrieval after a failed one | `30` |
 | `timeout` _(optional)_ | Time (in milliseconds) until the accessory will be marked as _Not Responding_ if it is unreachable | `3000` |
 | `http_method` _(optional)_ | HTTP method used to communicate with the device | `GET` |
 | `username` _(optional)_ | Username if HTTP authentication is enabled | N/A |
@@ -56,22 +57,30 @@ This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-ba
 
 Your API should be able to:
 
-1. Open/close the garage when it receives:
+1. Return JSON information when it receives `/status`:
+```
+{
+    "currentDoorState": INT_VALUE,
+    "targetDoorState": INT_VALUE
+}
+```
+
+2. Open/close the garage when it receives:
 ```
 /targetDoorState/INT_VALUE_0_TO_1
 ```
 
-2. Update `currentDoorState` as it opens/closes by messaging the listen server:
+3. Update `currentDoorState` as it opens/closes by messaging the listen server:
 ```
 /currentDoorState/INT_VALUE_0_TO_3
 ```
 
-3. Update `targetDoorState` following a manual override by messaging the listen server:
+4. Update `targetDoorState` following a manual override by messaging the listen server:
 ```
 /targetDoorState/INT_VALUE_0_TO_1
 ```
 
-4. Update `obstructionDetected` when an obstruction is detected by messaging the listen server (should notify `0` after obstruction leaves unless `autoReset` is enabled):
+5. Update `obstructionDetected` when an obstruction is detected by messaging the listen server (should notify `0` after obstruction moves unless `autoReset` is enabled):
 ```
 /obstructionDetected/INT_VALUE_0_TO_1
 ```
