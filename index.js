@@ -1,6 +1,6 @@
 var Service, Characteristic
-const request = require('request')
 const packageJson = require('./package.json')
+const request = require('request')
 const ip = require('ip')
 const http = require('http')
 
@@ -15,8 +15,10 @@ function GarageDoorOpener (log, config) {
 
   this.name = config.name
   this.apiroute = config.apiroute
-  this.port = config.port || 2000
   this.pollInterval = config.pollInterval || 300
+  
+  this.port = config.port || 2000
+  this.requestArray = ['targetDoorState', 'currentDoorState', 'obstructionDetected']
 
   this.autoLock = config.autoLock || false
   this.autoLockDelay = config.autoLockDelay || 10
@@ -33,8 +35,6 @@ function GarageDoorOpener (log, config) {
   this.password = config.password || null
   this.timeout = config.timeout || 3000
   this.http_method = config.http_method || 'GET'
-
-  this.requestArray = ['targetDoorState', 'currentDoorState', 'obstructionDetected']
 
   if (this.username != null && this.password != null) {
     this.auth = {
