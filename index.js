@@ -16,7 +16,7 @@ function GarageDoorOpener (log, config) {
   this.name = config.name
   this.apiroute = config.apiroute
   this.port = config.port || 2000
-  this.pollInterval = config.pollInterval || 60
+  this.pollInterval = config.pollInterval || 300
 
   this.autoLock = config.autoLock || false
   this.autoLockDelay = config.autoLockDelay || 10
