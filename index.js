@@ -16,6 +16,7 @@ function GarageDoorOpener (log, config) {
   this.name = config.name
   this.apiroute = config.apiroute
   this.port = config.port || 2000
+  this.retryDelay = config.retryDelay || 30
 
   this.autoLock = config.autoLock || false
   this.autoLockDelay = config.autoLockDelay || 10
@@ -68,6 +69,28 @@ GarageDoorOpener.prototype = {
   identify: function (callback) {
     this.log('Identify requested!')
     callback()
+  },
+
+  _getStatus: function (callback) {
+    var url = this.apiroute + '/status'
+    this.log('Getting status: %s', url)
+    this._httpRequest(url, '', 'GET', function (error, response, responseBody) {
+      if (error) {
+        this.log.warn('Error getting status: %s', error.message)
+        this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(new Error('Error getting status'))
+        this.retryStatus()
+        callback(error)
+      } else {
+        this.log('Device response: %s', responseBody)
+        var json = JSON.parse(responseBody)
+        this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(json.currentDoorState)
+        this.log('Updated currentDoorState: %s', json.currentDoorState)
+        this.service.getCharacteristic(Characteristic.TargetDoorState).updateValue(json.targetDoorState)
+        this.log('Updated targetDoorState: %s', json.targetDoorState)
+        this.service.getCharacteristic(Characteristic.ObstructionDetected).updateValue(0)
+        callback()
+      }
+    }.bind(this))
   },
 
   _httpHandler: function (characteristic, value) {
@@ -142,11 +165,15 @@ GarageDoorOpener.prototype = {
     }, this.autoResetDelay * 1000)
   },
 
-  getServices: function () {
-    this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(1)
-    this.service.getCharacteristic(Characteristic.TargetDoorState).updateValue(1)
-    this.service.getCharacteristic(Characteristic.ObstructionDetected).updateValue(0)
+  retryStatus: function () {
+    this.log('Waiting %s seconds to retry device status', this.retryDelay)
+    setTimeout(() => {
+      this.log('Retrying device status...')
+      this._getStatus(function () {})
+    }, this.retryDelay * 1000)
+  },
 
+  getServices: function () {
     this.informationService = new Service.AccessoryInformation()
     this.informationService
       .setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
@@ -157,6 +184,8 @@ GarageDoorOpener.prototype = {
     this.service
       .getCharacteristic(Characteristic.TargetDoorState)
       .on('set', this.setTargetDoorState.bind(this))
+
+    this._getStatus(function () {})
 
     return [this.informationService, this.service]
   }
