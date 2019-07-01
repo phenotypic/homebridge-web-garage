@@ -34,6 +34,7 @@ This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-ba
 ### Optional fields
 | Key | Description | Default |
 | --- | --- | --- |
+| `pollInterval` _(optional)_ | Time (in seconds) between device polls | `300` |
 | `autoLock` _(optional)_ | Whether your garage should auto-close after being opened | `false` |
 | `autoLockDelay` _(optional)_ | Time (in seconds) until your garage will automatically close (if enabled) | `10` |
 | `autoReset` _(optional)_ | Whether obstruction detection should automatically change the state back to `0` after being triggered | `false` |
@@ -43,7 +44,6 @@ This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-ba
 | Key | Description | Default |
 | --- | --- | --- |
 | `port` _(optional)_ | Port for your HTTP listener (only one listener per port) | `2000` |
-| `retryDelay`  _(optional)_ | Interval (in seconds) until next status retrieval after a failed one | `30` |
 | `timeout` _(optional)_ | Time (in milliseconds) until the accessory will be marked as _Not Responding_ if it is unreachable | `3000` |
 | `http_method` _(optional)_ | HTTP method used to communicate with the device | `GET` |
 | `username` _(optional)_ | Username if HTTP authentication is enabled | N/A |
