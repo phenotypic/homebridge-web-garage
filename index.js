@@ -16,7 +16,7 @@ function GarageDoorOpener (log, config) {
   this.name = config.name
   this.apiroute = config.apiroute
   this.pollInterval = config.pollInterval || 300
-  
+
   this.port = config.port || 2000
   this.requestArray = ['targetDoorState', 'currentDoorState', 'obstructionDetected']
 
@@ -73,7 +73,7 @@ GarageDoorOpener.prototype = {
 
   _getStatus: function (callback) {
     var url = this.apiroute + '/status'
-    this.log('Getting status: %s', url)
+    this.log.debug('Getting status: %s', url)
     this._httpRequest(url, '', 'GET', function (error, response, responseBody) {
       if (error) {
         this.log.warn('Error getting status: %s', error.message)
@@ -81,12 +81,12 @@ GarageDoorOpener.prototype = {
         this.retryStatus()
         callback(error)
       } else {
-        this.log('Device response: %s', responseBody)
+        this.log.debug('Device response: %s', responseBody)
         var json = JSON.parse(responseBody)
         this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(json.currentDoorState)
-        this.log('Updated currentDoorState: %s', json.currentDoorState)
+        this.log('Updated currentDoorState to: %s', json.currentDoorState)
         this.service.getCharacteristic(Characteristic.TargetDoorState).updateValue(json.targetDoorState)
-        this.log('Updated targetDoorState: %s', json.targetDoorState)
+        this.log('Updated targetDoorState to: %s', json.targetDoorState)
         this.service.getCharacteristic(Characteristic.ObstructionDetected).updateValue(0)
         callback()
       }
@@ -96,19 +96,19 @@ GarageDoorOpener.prototype = {
   _httpHandler: function (characteristic, value) {
     switch (characteristic) {
       case 'currentDoorState':
-        this.log('Updating %s to: %s', characteristic, value)
         this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(value)
+        this.log('Updated %s to: %s', characteristic, value)
         break
       case 'targetDoorState':
-        this.log('Updating %s to: %s', characteristic, value)
         this.service.getCharacteristic(Characteristic.TargetDoorState).updateValue(value)
+        this.log('Updated %s to: %s', characteristic, value)
         if (parseInt(value) === 0 && this.autoLock) {
           this.autoLockFunction()
         }
         break
       case 'obstructionDetected':
-        this.log('Updating %s to: %s', characteristic, value)
         this.service.getCharacteristic(Characteristic.ObstructionDetected).updateValue(value)
+        this.log('Updated %s to: %s', characteristic, value)
         if (parseInt(value) === 1 && this.autoReset) {
           this.autoResetFunction()
         }
@@ -134,13 +134,13 @@ GarageDoorOpener.prototype = {
 
   setTargetDoorState: function (value, callback) {
     var url = this.apiroute + '/setTargetDoorState/' + value
-    this.log('Setting targetDoorState: %s', url)
+    this.log.debug('Setting targetDoorState: %s', url)
     this._httpRequest(url, '', this.http_method, function (error, response, responseBody) {
       if (error) {
         this.log.warn('Error setting targetDoorState: %s', error.message)
         callback(error)
       } else {
-        this.log('Successfully set targetDoorState to: %s', value)
+        this.log('Set targetDoorState to: %s', value)
         if (value === 0 && this.autoLock) {
           this.autoLockFunction()
         }
