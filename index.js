@@ -84,9 +84,9 @@ GarageDoorOpener.prototype = {
         this.log.debug('Device response: %s', responseBody)
         var json = JSON.parse(responseBody)
         this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(json.currentDoorState)
-        this.log('Updated currentDoorState to: %s', json.currentDoorState)
+        this.log.debug('Updated currentDoorState to: %s', json.currentDoorState)
         this.service.getCharacteristic(Characteristic.TargetDoorState).updateValue(json.targetDoorState)
-        this.log('Updated targetDoorState to: %s', json.targetDoorState)
+        this.log.debug('Updated targetDoorState to: %s', json.targetDoorState)
         this.service.getCharacteristic(Characteristic.ObstructionDetected).updateValue(0)
         callback()
       }
