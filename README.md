@@ -75,22 +75,22 @@ Your API should be able to:
 
 2. Open/close the garage when it receives:
 ```
-/targetDoorState/INT_VALUE_0_TO_1
+/targetDoorState?value=INT_VALUE_0_TO_1
 ```
 
 3. Update `currentDoorState` as it opens/closes by messaging the listen server:
 ```
-/currentDoorState/INT_VALUE_0_TO_3
+/currentDoorState?value=INT_VALUE_0_TO_3
 ```
 
 4. Update `targetDoorState` following a manual override by messaging the listen server:
 ```
-/targetDoorState/INT_VALUE_0_TO_1
+/targetDoorState?value=INT_VALUE_0_TO_1
 ```
 
 5. Update `obstructionDetected` when an obstruction is detected by messaging the listen server (should notify `0` after obstruction moves unless `autoReset` is enabled):
 ```
-/obstructionDetected/INT_VALUE_0_TO_1
+/obstructionDetected?value=INT_VALUE_0_TO_1
 ```
 
 ## DoorState Key
