@@ -12,11 +12,11 @@
 
 ## Description
 
-This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-based garage opener to Apple's [HomeKit](http://www.apple.com/ios/home/). Using HTTP requests, you can open/close the garage and update the plugin with the garage's real-time position. The plugin achieves this by setting up a listen server which listens for changes in state from your device and then feeds them real-time into HomeKit.
+This [homebridge](https://github.com/homebridge/homebridge) plugin exposes a web-based garage opener to Apple's [HomeKit](http://www.apple.com/ios/home/). Using HTTP requests, you can open/close the garage and update the plugin with the garage's real-time position. The plugin achieves this by setting up a listen server which listens for changes in state from your device and then feeds them real-time into HomeKit.
 
 ## Installation
 
-1. Install [homebridge](https://github.com/nfarina/homebridge#installation-details)
+1. Install [homebridge](https://github.com/homebridge/homebridge#installation)
 2. Install this plugin: `npm install -g homebridge-web-garage`
 3. Update your `config.json`
 
