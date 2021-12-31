@@ -26,7 +26,7 @@ function GarageDoorOpener (log, config) {
   this.autoReset = config.autoReset || false
   this.autoResetDelay = config.autoResetDelay || 5
 
-  this.manufacturer = config.manufacturer || packageJson.author.name
+  this.manufacturer = config.manufacturer || packageJson.author
   this.serial = config.serial || packageJson.version
   this.model = config.model || packageJson.name
   this.firmware = config.firmware || packageJson.version
