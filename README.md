@@ -1,14 +1,22 @@
+<p align="center">
+  <a href="https://github.com/homebridge/homebridge"><img src="https://raw.githubusercontent.com/homebridge/branding/master/logos/homebridge-color-round-stylized.png" height="140"></a>
+</p>
+
+<span align="center">
+
 # homebridge-web-garage
 
 [![npm](https://img.shields.io/npm/v/homebridge-web-garage.svg)](https://www.npmjs.com/package/homebridge-web-garage) [![npm](https://img.shields.io/npm/dt/homebridge-web-garage.svg)](https://www.npmjs.com/package/homebridge-web-garage)
 
+</span>
+
 ## Description
 
-This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-based garage opener to Apple's [HomeKit](http://www.apple.com/ios/home/). Using HTTP requests, you can open/close the garage and update the plugin with the garage's real-time position. The plugin achieves this by setting up a listen server which listens for changes in state from your device and then feeds them real-time into HomeKit.
+This [homebridge](https://github.com/homebridge/homebridge) plugin exposes a web-based garage opener to Apple's [HomeKit](http://www.apple.com/ios/home/). Using HTTP requests, you can open/close the garage and update the plugin with the garage's real-time position. The plugin achieves this by setting up a listen server which listens for changes in state from your device and then feeds them real-time into HomeKit.
 
 ## Installation
 
-1. Install [homebridge](https://github.com/nfarina/homebridge#installation-details)
+1. Install [homebridge](https://github.com/homebridge/homebridge#installation)
 2. Install this plugin: `npm install -g homebridge-web-garage`
 3. Update your `config.json`
 
@@ -72,17 +80,17 @@ Your API should be able to:
 
 3. Update `currentDoorState` as it opens/closes by messaging the listen server:
 ```
-/currentDoorState/INT_VALUE_0_TO_3
+/currentDoorState?value=INT_VALUE_0_TO_3
 ```
 
 4. Update `targetDoorState` following a manual override by messaging the listen server:
 ```
-/targetDoorState/INT_VALUE_0_TO_1
+/targetDoorState?value=INT_VALUE_0_TO_1
 ```
 
 5. Update `obstructionDetected` when an obstruction is detected by messaging the listen server (should notify `0` after obstruction moves unless `autoReset` is enabled):
 ```
-/obstructionDetected/INT_VALUE_0_TO_1
+/obstructionDetected?value=INT_VALUE_0_TO_1
 ```
 
 ## DoorState Key
