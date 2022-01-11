@@ -77,7 +77,6 @@ GarageDoorOpener.prototype = {
       if (error) {
         this.log.warn('Error getting status: %s', error.message)
         this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(new Error('Error getting status'))
-        this.retryStatus()
         callback(error)
       } else {
         this.log.debug('Device response: %s', responseBody)
