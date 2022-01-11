@@ -26,7 +26,7 @@ function GarageDoorOpener (log, config) {
   this.autoReset = config.autoReset || false
   this.autoResetDelay = config.autoResetDelay || 5
 
-  this.manufacturer = config.manufacturer || packageJson.author.name
+  this.manufacturer = config.manufacturer || packageJson.author
   this.serial = config.serial || packageJson.version
   this.model = config.model || packageJson.name
   this.firmware = config.firmware || packageJson.version
@@ -44,13 +44,12 @@ function GarageDoorOpener (log, config) {
   }
 
   this.server = http.createServer(function (request, response) {
-    var parts = request.url.split('/')
-    var partOne = parts[parts.length - 2]
-    var partTwo = parts[parts.length - 1]
-    if (parts.length === 3 && this.requestArray.includes(partOne) && partTwo.length === 1) {
-      this.log('Handling request: %s', request.url)
+    var baseURL = 'http://' + request.headers.host + '/'
+    var url = new URL(request.url, baseURL)
+    if (this.requestArray.includes(url.pathname.substr(1))) {
+      this.log.debug('Handling request')
       response.end('Handling request')
-      this._httpHandler(partOne, partTwo)
+      this._httpHandler(url.pathname.substr(1), url.searchParams.get('value'))
     } else {
       this.log.warn('Invalid request: %s', request.url)
       response.end('Invalid request')
@@ -82,13 +81,17 @@ GarageDoorOpener.prototype = {
         callback(error)
       } else {
         this.log.debug('Device response: %s', responseBody)
-        var json = JSON.parse(responseBody)
-        this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(json.currentDoorState)
-        this.log('Updated currentDoorState to: %s', json.currentDoorState)
-        this.service.getCharacteristic(Characteristic.TargetDoorState).updateValue(json.targetDoorState)
-        this.log('Updated targetDoorState to: %s', json.targetDoorState)
-        this.service.getCharacteristic(Characteristic.ObstructionDetected).updateValue(0)
-        callback()
+        try {
+          var json = JSON.parse(responseBody)
+          this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(json.currentDoorState)
+          this.log.debug('Updated currentDoorState to: %s', json.currentDoorState)
+          this.service.getCharacteristic(Characteristic.TargetDoorState).updateValue(json.targetDoorState)
+          this.log.debug('Updated targetDoorState to: %s', json.targetDoorState)
+          this.service.getCharacteristic(Characteristic.ObstructionDetected).updateValue(0)
+          callback()
+        } catch (e) {
+          this.log.warn('Error parsing status: %s', e.message)
+        }
       }
     }.bind(this))
   },
@@ -133,7 +136,7 @@ GarageDoorOpener.prototype = {
   },
 
   setTargetDoorState: function (value, callback) {
-    var url = this.apiroute + '/setTargetDoorState/' + value
+    var url = this.apiroute + '/setTargetDoorState?value=' + value
     this.log.debug('Setting targetDoorState: %s', url)
     this._httpRequest(url, '', this.http_method, function (error, response, responseBody) {
       if (error) {
