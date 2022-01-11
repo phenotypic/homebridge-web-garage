@@ -75,7 +75,7 @@ Your API should be able to:
 
 2. Open/close the garage when it receives:
 ```
-/targetDoorState?value=INT_VALUE_0_TO_1
+/setTargetDoorState?value=INT_VALUE_0_TO_1
 ```
 
 3. Update `currentDoorState` as it opens/closes by messaging the listen server:
@@ -101,4 +101,3 @@ Your API should be able to:
 | `1` | Closed |
 | `2` | Opening |
 | `3` | Closing |
-
