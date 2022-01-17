@@ -1,6 +1,6 @@
 {
   "name": "homebridge-web-garage",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Homebridge plugin for a web-based garage",
   "main": "index.js",
   "engines": {
