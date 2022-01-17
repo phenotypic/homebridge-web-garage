@@ -1,4 +1,4 @@
-var Service, Characteristic
+let Service, Characteristic
 const packageJson = require('./package.json')
 const request = require('request')
 const ip = require('ip')
@@ -44,12 +44,16 @@ function GarageDoorOpener (log, config) {
   }
 
   this.server = http.createServer(function (request, response) {
-    var baseURL = 'http://' + request.headers.host + '/'
-    var url = new URL(request.url, baseURL)
+    const baseURL = 'http://' + request.headers.host + '/'
+    const url = new URL(request.url, baseURL)
     if (this.requestArray.includes(url.pathname.substr(1))) {
-      this.log.debug('Handling request')
-      response.end('Handling request')
-      this._httpHandler(url.pathname.substr(1), url.searchParams.get('value'))
+      try {
+        this.log.debug('Handling request')
+        response.end('Handling request')
+        this._httpHandler(url.pathname.substr(1), url.searchParams.get('value'))
+      } catch (e) {
+        this.log.warn('Error parsing request: %s', e.message)
+      }
     } else {
       this.log.warn('Invalid request: %s', request.url)
       response.end('Invalid request')
@@ -71,7 +75,7 @@ GarageDoorOpener.prototype = {
   },
 
   _getStatus: function (callback) {
-    var url = this.apiroute + '/status'
+    const url = this.apiroute + '/status'
     this.log.debug('Getting status: %s', url)
     this._httpRequest(url, '', 'GET', function (error, response, responseBody) {
       if (error) {
@@ -81,7 +85,7 @@ GarageDoorOpener.prototype = {
       } else {
         this.log.debug('Device response: %s', responseBody)
         try {
-          var json = JSON.parse(responseBody)
+          const json = JSON.parse(responseBody)
           this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(json.currentDoorState)
           this.log.debug('Updated currentDoorState to: %s', json.currentDoorState)
           this.service.getCharacteristic(Characteristic.TargetDoorState).updateValue(json.targetDoorState)
@@ -97,26 +101,30 @@ GarageDoorOpener.prototype = {
 
   _httpHandler: function (characteristic, value) {
     switch (characteristic) {
-      case 'currentDoorState':
+      case 'currentDoorState': {
         this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(value)
         this.log('Updated %s to: %s', characteristic, value)
         break
-      case 'targetDoorState':
+      }
+      case 'targetDoorState': {
         this.service.getCharacteristic(Characteristic.TargetDoorState).updateValue(value)
         this.log('Updated %s to: %s', characteristic, value)
         if (parseInt(value) === 0 && this.autoLock) {
           this.autoLockFunction()
         }
         break
-      case 'obstructionDetected':
+      }
+      case 'obstructionDetected': {
         this.service.getCharacteristic(Characteristic.ObstructionDetected).updateValue(value)
         this.log('Updated %s to: %s', characteristic, value)
         if (parseInt(value) === 1 && this.autoReset) {
           this.autoResetFunction()
         }
         break
-      default:
+      }
+      default: {
         this.log.warn('Unknown characteristic "%s" with value "%s"', characteristic, value)
+      }
     }
   },
 
@@ -135,7 +143,7 @@ GarageDoorOpener.prototype = {
   },
 
   setTargetDoorState: function (value, callback) {
-    var url = this.apiroute + '/setTargetDoorState?value=' + value
+    const url = this.apiroute + '/setTargetDoorState?value=' + value
     this.log.debug('Setting targetDoorState: %s', url)
     this._httpRequest(url, '', this.http_method, function (error, response, responseBody) {
       if (error) {
